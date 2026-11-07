@@ -1859,7 +1859,11 @@ int Encoder::encode(const x265_picture* pic_in, x265_picture* pic_out)
                 cuCount = inFrame->m_lowres.maxBlocksInRowFullRes * inFrame->m_lowres.maxBlocksInColFullRes;
             else
                 cuCount = inFrame->m_lowres.maxBlocksInRow * inFrame->m_lowres.maxBlocksInCol;
-            memcpy(inFrame->m_quantOffsets, inputPic->quantOffsets, cuCount * sizeof(float));
+            // Python may pass fewer floats than the over-allocated cuCount;
+            // only copy the valid 16x16 blocks and zero the rest to avoid OOB reads.
+            int validCount = ((inFrame->m_fencPic->m_picWidth + 15) >> 4) * ((inFrame->m_fencPic->m_picHeight + 15) >> 4);
+            memset(inFrame->m_quantOffsets, 0, cuCount * sizeof(float));
+            memcpy(inFrame->m_quantOffsets, inputPic->quantOffsets, validCount * sizeof(float));
         }
 
         if (m_pocLast == 0)
@@ -3657,11 +3661,9 @@ void Encoder::configure(x265_param *p)
 
     if (p->rc.rateControlMode == X265_RC_CQP)
     {
-        p->rc.aqMode = X265_AQ_NONE;
-        p->rc.hevcAq = 0;
+        // PATCHED: keep user-supplied aqMode / cuTree / aqStrength so that
+        // x265_picture.quantOffsets (per-block QP) works in CQP mode.
         p->rc.bitrate = 0;
-        p->rc.cuTree = 0;
-        p->rc.aqStrength = 0;
     }
 
     if (p->rc.aqMode == 0 && p->rc.cuTree)

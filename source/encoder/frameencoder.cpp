@@ -1397,7 +1397,7 @@ void FrameEncoder::processRowEncoder(int intRow, ThreadLocalData& tld)
                 double *qpoffs = (isReferenced && m_param->rc.cuTree) ? m_frame->m_lowres.qpCuTreeOffset : m_frame->m_lowres.qpAqOffset;
                 if (qpoffs)
                 {
-                    uint32_t loopIncr = (m_param->rc.qgSize == 8) ? 8 : 16;
+                    uint32_t loopIncr = 16; // qg-size=8 grid is 16x16
 
                     uint32_t cuYStart = 0, height = m_frame->m_fencPic->m_picHeight;
                     if (m_param->bEnableWavefront)

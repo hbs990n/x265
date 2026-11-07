@@ -3581,7 +3581,7 @@ uint32_t Analysis::calculateCUVariance(const CUData& ctu, const CUGeom& cuGeom)
 {
     uint32_t cuVariance = 0;
     uint32_t *blockVariance = m_frame->m_lowres.blockVariance;
-    int loopIncr = (m_param->rc.qgSize == 8) ? 8 : 16;
+    int loopIncr = 16; // qg-size=8 grid is 16x16, so iterate in 16-pixel steps
 
     uint32_t width = m_frame->m_fencPic->m_picWidth;
     uint32_t height = m_frame->m_fencPic->m_picHeight;
@@ -3676,7 +3676,7 @@ int Analysis::calculateQpforCuSize(const CUData& ctu, const CUGeom& cuGeom, int3
     }
     else
     {
-        int loopIncr = (m_param->rc.qgSize == 8) ? 8 : 16;
+        int loopIncr = 16; // qg-size=8 grid is 16x16, so iterate in 16-pixel steps
         /* Use cuTree offsets if cuTree enabled and frame is referenced, else use AQ offsets */
         double *qpoffs = bCuTreeOffset ? m_frame->m_lowres.qpCuTreeOffset : m_frame->m_lowres.qpAqOffset;
         if (qpoffs)

@@ -2749,7 +2749,7 @@ void Lookahead::estimateCUPropagate(Lowres **frames, double averageDuration, int
 void Lookahead::computeCUTreeQpOffset(Lowres *frame, double averageDuration, int ref0Distance)
 {
     int fpsFactor = (int)(CLIP_DURATION(averageDuration) / CLIP_DURATION((double)m_param->fpsDenom / m_param->fpsNum) * 256);
-    uint32_t loopIncr = (m_param->rc.qgSize == 8) ? 8 : 16;
+    uint32_t loopIncr = 16; // qg-size=8 still uses the 16x16 full-res grid, not 8x8
 
     double weightdelta = 0.0;
     if (ref0Distance && frame->weightedCostDelta[ref0Distance - 1] > 0)
