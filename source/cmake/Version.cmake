@@ -132,6 +132,14 @@ elseif(GIT_ARCHETYPE STREQUAL "2")
         ERROR_QUIET
         OUTPUT_STRIP_TRAILING_WHITESPACE
         )
+    # Shallow clones / forks without tags make "git describe" return empty.
+    # Fall back to a fixed release label so the build does not fail.
+    if(NOT X265_LATEST_TAG MATCHES "^[0-9]")
+        set(X265_LATEST_TAG "3.5")
+        set(X265_TAG_DISTANCE "0")
+        set(X265_REVISION_ID "")
+        set(X265_REPO_ID "")
+    endif()
 elseif(GIT_ARCHETYPE STREQUAL "1")
     message(STATUS "X265 GIT ARCHIVE EXTRACT VERSION INFORMATION PROCESSING")
     #Read the lines of the archive summary file to extract the version
